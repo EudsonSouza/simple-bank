@@ -11,8 +11,7 @@ namespace SimpleBank
         {
             listAccount = new List<Account>();
             string userOption = "";
-            listAccount.Add(new Account(AccountType.BusinessAccount, 0, 200, "Eudson business"));
-            listAccount.Add(new Account(AccountType.PersonalAccount, 0, 20, "Eudson personal"));
+
             while (userOption != "X")
             {
                 userOption = GetUserOption();
