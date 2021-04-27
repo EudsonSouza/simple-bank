@@ -42,7 +42,7 @@ namespace SimpleBank
             }
             this.Balance -= value;
             Console
-                .WriteLine($"Current balance of {this.Name} is {this.Balance}");
+                .WriteLine($"\nCurrent balance of {this.Name} is {this.Balance}");
             return true;
         }
 
@@ -50,7 +50,7 @@ namespace SimpleBank
         {
             this.Balance += value;
             Console
-                .WriteLine($"Current balance of {this.Name} is {this.Balance}");
+                .WriteLine($"\nCurrent balance of {this.Name} is {this.Balance}");
         }
 
         public void Transfer(double value, Account account)
@@ -63,7 +63,7 @@ namespace SimpleBank
 
         public override string ToString()
         {
-            return $"Account type: {this.AccountType} | Client's Name: {this.Name} | Current balance: {this.Balance} | Current credit {this.Credit}";
+            return $"Account type: {this.AccountType} | Client's Name: {this.Name} | Current balance: {this.Balance} | Credit Limit: {this.Credit}";
         }
     }
 }

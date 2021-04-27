@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SimpleBank
 {
@@ -39,7 +40,8 @@ namespace SimpleBank
                         Exit();
                         return;
                     default:
-                        throw new IndexOutOfRangeException();
+                        Console.WriteLine("Invalid option, please type a menu option");
+                        break;
                 }
             }
         }
@@ -47,15 +49,17 @@ namespace SimpleBank
         private static void Exit()
         {
             Console.WriteLine("Thanks for using our services");
+            Console.ReadLine();
         }
 
         private static void Deposit()
         {
+            int accountNumber = 0;
             Console.Write("Type the account number: ");
-            var accountNumber = int.Parse(Console.ReadLine());
+            accountNumber = GetValidAccountNumber();
 
-            Console.Write("Type the value to withdraw: ");
-            var value = double.Parse(Console.ReadLine());
+            Console.Write("Type the value to deposit: ");
+            var value = GetValidMoneyInput();
 
             listAccount[accountNumber].Deposit(value);
         }
@@ -74,37 +78,108 @@ namespace SimpleBank
         private static void Transfer()
         {
             Console.Write("Type the origin account number: ");
-            var originAccountNumber = int.Parse(Console.ReadLine());
+            var originAccountNumber = GetValidAccountNumber();
 
-            Console.Write("Type the origin account number: ");
-            var destinyAccountNumber = int.Parse(Console.ReadLine());
+            Console.Write("Type the destiny account number: ");
+            var destinyAccountNumber = GetValidAccountNumber();
 
             Console.Write("Type the value to transfer: ");
-            var value = double.Parse(Console.ReadLine());
+            var value = GetValidMoneyInput();
 
             listAccount[originAccountNumber].Transfer(value, listAccount[destinyAccountNumber]);
         }
 
+        private static int GetValidAccountNumber()
+        {
+            bool isInt = false;
+            bool isInRange = false;
+            int accountNumberInput = -1;
+            var errorMessage = $"Invalid value, accounts numbers registred are between 0 and {listAccount.Count - 1}";
+            while (!isInt || !isInRange)
+            {
+                isInt = int.TryParse(Console.ReadLine(), out accountNumberInput);
+
+                if (isInt)
+                {
+                    isInRange = 0 <= accountNumberInput && accountNumberInput < listAccount.Count;
+                    if (isInRange)
+                    {
+                        errorMessage = "";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    Console.WriteLine(errorMessage);
+                }
+            }
+            return accountNumberInput;
+
+        }
+
         private static void AddNewAccount()
         {
-            Console.WriteLine("Add new account\n");
+            Console.WriteLine("Add new account");
 
-            Console
-                .WriteLine("Type 1 to add personal account or 2 to add business account");
-            var inputTypeAccount = int.Parse(Console.ReadLine());
+            var accountType = GetValidAccountType();
 
             Console.WriteLine("\nType client's name");
-            var inputName = Console.ReadLine();
+            var name = Console.ReadLine();
 
-            Console.WriteLine("\nType CreditLimit");
-            var inputCreditLimit = double.Parse(Console.ReadLine());
+            Console.WriteLine("\nType the credit limit");
+            double creditLimit = GetValidMoneyInput();
+
 
             var newAccount =
-                new Account((AccountType)inputTypeAccount,
-                    inputCreditLimit,
-                    inputName);
+                new Account((AccountType)accountType,
+                    creditLimit,
+                    name);
 
             listAccount.Add(newAccount);
+
+            Console.WriteLine("Account added!");
+        }
+
+        private static double GetValidMoneyInput()
+        {
+            bool isDecimal = false;
+            bool isPositive = false;
+            double moneyImput = -1;
+            while (!isDecimal || !isPositive)
+            {
+                isDecimal = double.TryParse(Console.ReadLine(), out moneyImput);
+                isPositive = moneyImput >= 0;
+
+                if (!isDecimal || !isPositive)
+                {
+                    Console.WriteLine("Type a value greater than or equal to 0");
+                }
+            }
+            return moneyImput;
+        }
+
+        private static int GetValidAccountType()
+        {
+            bool validAccountType = false;
+            bool isInt = false;
+            int accountType = 0;
+
+            while (!validAccountType)
+            {
+
+                Console.WriteLine("Type 1 to add personal account or 2 to add business account");
+
+                isInt = int.TryParse(Console.ReadLine(), NumberStyles.Integer, null, out accountType);
+                validAccountType = (AccountType)accountType == AccountType.BusinessAccount ||
+                                   (AccountType)accountType == AccountType.PersonalAccount;
+
+                if (!isInt || !validAccountType)
+                {
+                    Console.WriteLine("Invalid value.");
+                }
+            }
+
+            return accountType;
         }
 
         private static void ListAccounts()
@@ -117,7 +192,7 @@ namespace SimpleBank
             {
                 for (int i = 0; i < listAccount.Count; i++)
                 {
-                    Console.Write($"[{i}] ");
+                    Console.Write($"Account Number: {i} |");
                     Console.WriteLine(listAccount[i].ToString());
                 }
             }
